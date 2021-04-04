@@ -22,44 +22,22 @@ SOFTWARE. """
 
 import hid
 from time import sleep
-from enum import Enum, unique
+from enum import Enum, unique, auto
 from typing import Dict, List, Union
 
 
-@unique
-class GP0(Enum):
-    INPUT = 4
-    OUTPUT = 3
-    LED_RX = 2
-    SSPND = 1
-
-
-@unique
-class GP1(Enum):
-    INPUT = 6
-    OUTPUT = 5
-    INTERRUPT = 4
-    LEDX = 3
-    ADC = 2
-    CLOCK_OUT = 1
-
-
-@unique
-class GP2(Enum):
-    INPUT = 5
-    OUTPUT = 4
-    DAC = 3
-    ADC = 2
-    USBCFG = 1
-
-
-@unique
-class GP3(Enum):
-    INPUT = 5
-    OUTPUT = 4
-    DAC = 3
-    ADC = 2
-    LED_I2C = 1
+class TYPE(Enum):
+    INPUT = auto()
+    OUTPUT = auto()
+    ADC = auto()
+    DAC = auto()
+    CLOCK_OUT = auto()
+    INTERRUPT = auto()
+    LED_RX = auto()
+    LED_TX = auto()
+    LED_I2C = auto()
+    SSPND = auto()
+    USBCFG = auto()
 
 
 @unique
@@ -217,60 +195,76 @@ class MCP2221:
         # TODO
         raise Exception("Not yet implemented")
 
-    def InitGP(self, pin: int, type: Union[GP0, GP1, GP2, GP3],
-               value: int = 0):
+    def InitGP(self, pin: int, type: TYPE, value: int = 0):
         """ Init GPIO """
 
         buf = self._getConfig()
         buf[7 + 1] = 0b10000000  # alter GPIO
 
         if pin == 0:
-            if not isinstance(type, GP0):
+            buf[8 + 1] = 0
+
+            if type == TYPE.INPUT:
+                buf[8 + 1] |= 1 << 3
+            elif type == TYPE.OUTPUT:
+                buf[8 + 1] |= (value & 1) << 4
+            elif type == TYPE.SSPND:
+                buf[8 + 1] |= 1
+            elif type == TYPE.LED_RX:
+                buf[8 + 1] |= 2
+            else:
                 raise ValueError("Invalid type on pin GP0")
 
-            buf[8 + 1] = 0
-            if type == GP0.INPUT:
-                buf[8 + 1] |= 1 << 3
-            elif type == GP0.OUTPUT:
-                buf[8 + 1] |= (value & 1) << 4
-            else:
-                buf[8 + 1] |= type.value
-
         elif pin == 1:
-            if not isinstance(type, GP1):
+            buf[9 + 1] = 0
+
+            if type == TYPE.INPUT:
+                buf[9 + 1] |= 1 << 3
+            elif type == TYPE.OUTPUT:
+                buf[9 + 1] |= (value & 1) << 4
+            elif type == TYPE.CLOCK_OUT:
+                buf[8 + 1] |= 1
+            elif type == TYPE.ADC:
+                buf[8 + 1] |= 2
+            elif type == TYPE.LED_TX:
+                buf[8 + 1] |= 3
+            elif type == TYPE.INTERRUPT:
+                buf[8 + 1] |= 4
+            else:
                 raise ValueError("Invalid type on pin GP1")
 
-            buf[9 + 1] = 0
-            if type == GP1.INPUT:
-                buf[9 + 1] |= 1 << 3
-            elif type == GP1.OUTPUT:
-                buf[9 + 1] |= (value & 1) << 4
-            else:
-                buf[9 + 1] |= type.value
-
         elif pin == 2:
-            if not isinstance(type, GP2):
+            buf[10 + 1] = 0
+
+            if type == TYPE.INPUT:
+                buf[10 + 1] |= 1 << 3
+            elif type == TYPE.OUTPUT:
+                buf[10 + 1] |= (value & 1) << 4
+            elif type == TYPE.USBCFG:
+                buf[8 + 1] |= 1
+            elif type == TYPE.ADC:
+                buf[8 + 1] |= 2
+            elif type == TYPE.DAC:
+                buf[8 + 1] |= 3
+            else:
                 raise ValueError("Invalid type on pin GP2")
 
-            buf[10 + 1] = 0
-            if type == GP2.INPUT:
-                buf[10 + 1] |= 1 << 3
-            elif type == GP2.OUTPUT:
-                buf[10 + 1] |= (value & 1) << 4
-            else:
-                buf[10 + 1] |= type.value
-
         elif pin == 3:
-            if not isinstance(type, GP3):
+            buf[11 + 1] = 0
+
+            if type == TYPE.INPUT:
+                buf[11 + 1] |= 1 << 3
+            elif type == TYPE.OUTPUT:
+                buf[11 + 1] |= (value & 1) << 4
+            elif type == TYPE.LED_I2C:
+                buf[8 + 1] |= 1
+            elif type == TYPE.ADC:
+                buf[8 + 1] |= 2
+            elif type == TYPE.DAC:
+                buf[8 + 1] |= 3
+            else:
                 raise ValueError("Invalid type on pin GP3")
 
-            buf[11 + 1] = 0
-            if type == GP3.INPUT:
-                buf[11 + 1] |= 1 << 3
-            elif type == GP3.OUTPUT:
-                buf[11 + 1] |= (value & 1) << 4
-            else:
-                buf[11 + 1] |= type.value
         else:
             raise ValueError("Invalid pin number")
 
