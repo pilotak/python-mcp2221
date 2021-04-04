@@ -1,25 +1,3 @@
-""" MIT License
-
-Copyright (c) 2021 Pavel Slama
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE. """
-
 import hid
 from time import sleep
 from enum import Enum, unique, auto
@@ -134,18 +112,18 @@ class MCP2221:
         self.mcp2221.write(buffer)
         return self.mcp2221.read(65)
 
-    def SetClockOutput(self, value: DUTY, clock: CLOCK):
+    def SetClockOutput(self, duty: DUTY, clock: CLOCK):
         """ Set clock output """
 
-        if not isinstance(value, DUTY):
+        if not isinstance(duty, DUTY):
             raise ValueError("Invalid duty cycle value")
         if not isinstance(clock, CLOCK):
             raise ValueError("Invalid clock divider value")
 
         buf = self._getConfig()
-        buf[2 + 1] |= 0b10000000  # set mode
+        buf[2 + 1] = 0b10000000  # set mode
         buf[2 + 1] |= clock.value
-        buf[2 + 1] |= value.value << 3
+        buf[2 + 1] |= (duty.value << 3)
 
         self._send(buf)
 
@@ -223,13 +201,13 @@ class MCP2221:
             elif type == TYPE.OUTPUT:
                 buf[9 + 1] |= (value & 1) << 4
             elif type == TYPE.CLOCK_OUT:
-                buf[8 + 1] |= 1
+                buf[9 + 1] |= 1
             elif type == TYPE.ADC:
-                buf[8 + 1] |= 2
+                buf[9 + 1] |= 2
             elif type == TYPE.LED_TX:
-                buf[8 + 1] |= 3
+                buf[9 + 1] |= 3
             elif type == TYPE.INTERRUPT:
-                buf[8 + 1] |= 4
+                buf[9 + 1] |= 4
             else:
                 raise ValueError("Invalid type on pin GP1")
 
@@ -241,11 +219,11 @@ class MCP2221:
             elif type == TYPE.OUTPUT:
                 buf[10 + 1] |= (value & 1) << 4
             elif type == TYPE.USBCFG:
-                buf[8 + 1] |= 1
+                buf[10 + 1] |= 1
             elif type == TYPE.ADC:
-                buf[8 + 1] |= 2
+                buf[10 + 1] |= 2
             elif type == TYPE.DAC:
-                buf[8 + 1] |= 3
+                buf[10 + 1] |= 3
             else:
                 raise ValueError("Invalid type on pin GP2")
 
@@ -257,11 +235,11 @@ class MCP2221:
             elif type == TYPE.OUTPUT:
                 buf[11 + 1] |= (value & 1) << 4
             elif type == TYPE.LED_I2C:
-                buf[8 + 1] |= 1
+                buf[11 + 1] |= 1
             elif type == TYPE.ADC:
-                buf[8 + 1] |= 2
+                buf[11 + 1] |= 2
             elif type == TYPE.DAC:
-                buf[8 + 1] |= 3
+                buf[11 + 1] |= 3
             else:
                 raise ValueError("Invalid type on pin GP3")
 
@@ -270,7 +248,7 @@ class MCP2221:
 
         self._send(buf)
 
-    def ReadGP(self):
+    def ReadAllGP(self):
         """ Read GPIOs in bulk (when set as input or output) """
 
         buf = [0] * 65
@@ -288,14 +266,14 @@ class MCP2221:
         if not 0 <= pin <= 3:
             raise ValueError("Invalid pin number")
 
-        gpio = self.ReadGP()
+        gpio = self.ReadAllGP()
 
         if gpio:
             return gpio[pin]
         else:
             return None
 
-    def WriteGP(self, gp0: Union[int, None], gp1: Union[int, None],
+    def WriteAllGP(self, gp0: Union[int, None], gp1: Union[int, None],
                 gp2: Union[int, None], gp3: Union[int, None]):
         """ Write GPIO output """
 
