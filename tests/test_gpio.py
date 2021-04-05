@@ -31,10 +31,9 @@ def testRead(pin):
 
 def testIOAll():
     mcp2221 = MCP2221.MCP2221()
-    mcp2221.InitGP(0, MCP2221.TYPE.OUTPUT)
-    mcp2221.InitGP(1, MCP2221.TYPE.OUTPUT)
-    mcp2221.InitGP(2, MCP2221.TYPE.OUTPUT)
-    mcp2221.InitGP(3, MCP2221.TYPE.OUTPUT)
+    for i in range(4):
+        mcp2221.InitGP(i, MCP2221.TYPE.OUTPUT)
+
     mcp2221.WriteAllGP(1, 1, 1, 1)
     state = mcp2221.ReadAllGP()
 
@@ -56,59 +55,38 @@ def testInitInput(pin):
     assert (gp_type, direction) == (0, 1)
 
 
-def testGP0_SSPND():
+@pytest.mark.parametrize("pin,type,value", [
+    (0, MCP2221.TYPE.SSPND, 0b001),
+    (0, MCP2221.TYPE.LED_RX, 0b010),
+    (1, MCP2221.TYPE.LED_TX, 0b011),
+    (2, MCP2221.TYPE.USBCFG, 0b001),
+    (3, MCP2221.TYPE.LED_I2C, 0b001)])
+def testValidType(pin, type, value):
     mcp2221 = MCP2221.MCP2221()
-    mcp2221.InitGP(0, MCP2221.TYPE.SSPND)
+    mcp2221.InitGP(pin, type)
 
     buf = [0] * 65
     buf[1] = 0x61  # get SRAM settings
     buf = mcp2221._send(buf)
 
-    gp_type = buf[22] & 0b111
+    gp_type = buf[pin + 22] & 0b111
 
-    assert gp_type == 0b001
+    assert gp_type == value
 
 
-def testGP0_LED_RX():
+@pytest.mark.parametrize("pin,type", [
+    (0, MCP2221.TYPE.LED_I2C),
+    (1, MCP2221.TYPE.LED_RX),
+    (2, MCP2221.TYPE.SSPND),
+    (3, MCP2221.TYPE.CLOCK_OUT)])
+def testInvalidType(pin, type):
     mcp2221 = MCP2221.MCP2221()
-    mcp2221.InitGP(0, MCP2221.TYPE.LED_RX)
 
-    buf = [0] * 65
-    buf[1] = 0x61  # get SRAM settings
-    buf = mcp2221._send(buf)
-
-    gp_type = buf[22] & 0b111
-
-    assert gp_type == 0b010
+    with pytest.raises(ValueError):
+        mcp2221.InitGP(pin, type)
 
 
-def testGP1_LED_TX():
-    mcp2221 = MCP2221.MCP2221()
-    mcp2221.InitGP(1, MCP2221.TYPE.LED_TX)
-
-    buf = [0] * 65
-    buf[1] = 0x61  # get SRAM settings
-    buf = mcp2221._send(buf)
-
-    gp_type = buf[23] & 0b111
-
-    assert gp_type == 0b011
-
-
-def testGP2_USBCFG():
-    mcp2221 = MCP2221.MCP2221()
-    mcp2221.InitGP(2, MCP2221.TYPE.USBCFG)
-
-    buf = [0] * 65
-    buf[1] = 0x61  # get SRAM settings
-    buf = mcp2221._send(buf)
-
-    gp_type = buf[24] & 0b111
-
-    assert gp_type == 0b001
-
-
-def testInvalidPinNumber():
+def testInitInvalidPinNumber():
     mcp2221 = MCP2221.MCP2221()
 
     with pytest.raises(ValueError):
@@ -126,16 +104,4 @@ def testInvalidWritePin():
     mcp2221 = MCP2221.MCP2221()
 
     with pytest.raises(ValueError):
-        mcp2221.WriteGP(4)
-
-
-@pytest.mark.parametrize("pin,type", [
-    (0, MCP2221.TYPE.ADC),
-    (1, MCP2221.TYPE.LED_RX),
-    (2, MCP2221.TYPE.SSPND),
-    (3, MCP2221.TYPE.CLOCK_OUT)])
-def testInvalidType(pin, type):
-    mcp2221 = MCP2221.MCP2221()
-
-    with pytest.raises(ValueError):
-        mcp2221.InitGP(pin, type)
+        mcp2221.WriteGP(4, 1)
