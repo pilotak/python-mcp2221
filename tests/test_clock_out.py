@@ -2,6 +2,7 @@
 
 from MCP2221 import MCP2221
 
+
 def testClockOut():
     mcp2221 = MCP2221.MCP2221()
     mcp2221.InitGP(1, MCP2221.TYPE.CLOCK_OUT)

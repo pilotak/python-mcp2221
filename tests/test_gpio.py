@@ -28,6 +28,7 @@ def testRead(pin):
 
     assert state == 1
 
+
 def testIOAll():
     mcp2221 = MCP2221.MCP2221()
     mcp2221.InitGP(0, MCP2221.TYPE.OUTPUT)

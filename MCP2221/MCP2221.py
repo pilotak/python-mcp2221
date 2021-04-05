@@ -274,7 +274,7 @@ class MCP2221:
             return None
 
     def WriteAllGP(self, gp0: Union[int, None], gp1: Union[int, None],
-                gp2: Union[int, None], gp3: Union[int, None]):
+                   gp2: Union[int, None], gp3: Union[int, None]):
         """ Write GPIO output """
 
         buf = [0] * 65
