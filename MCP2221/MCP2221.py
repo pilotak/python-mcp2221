@@ -116,9 +116,9 @@ class MCP2221:
         """ Set clock output """
 
         if not isinstance(duty, DUTY):
-            raise ValueError("Invalid duty cycle value")
+            raise TypeError("Invalid duty cycle value")
         if not isinstance(clock, CLOCK):
-            raise ValueError("Invalid clock divider value")
+            raise TypeError("Invalid clock divider value")
 
         buf = self._getConfig()
         buf[2 + 1] = 0b10000000  # set mode
@@ -131,7 +131,7 @@ class MCP2221:
         """ Set DAC voltage reference """
 
         if not isinstance(ref, VRM):
-            raise ValueError("Invalid DAC voltage reference")
+            raise TypeError("Invalid DAC voltage reference")
 
         buf = self._getConfig()
         buf[3 + 1] = 0b10000000  # set mode
@@ -158,7 +158,7 @@ class MCP2221:
         """ Set ADC voltage reference """
 
         if not isinstance(ref, VRM):
-            raise ValueError("Invalid ADC voltage reference")
+            raise TypeError("Invalid ADC voltage reference")
 
         buf = self._getConfig()
         buf[5 + 1] = 0b10000000  # set mode
@@ -191,7 +191,7 @@ class MCP2221:
             elif type == TYPE.LED_RX:
                 buf[8 + 1] |= 2
             else:
-                raise ValueError("Invalid type on pin GP0")
+                raise TypeError("Invalid type on pin GP0")
 
         elif pin == 1:
             buf[9 + 1] = 0
@@ -209,7 +209,7 @@ class MCP2221:
             elif type == TYPE.INTERRUPT:
                 buf[9 + 1] |= 4
             else:
-                raise ValueError("Invalid type on pin GP1")
+                raise TypeError("Invalid type on pin GP1")
 
         elif pin == 2:
             buf[10 + 1] = 0
@@ -225,7 +225,7 @@ class MCP2221:
             elif type == TYPE.DAC:
                 buf[10 + 1] |= 3
             else:
-                raise ValueError("Invalid type on pin GP2")
+                raise TypeError("Invalid type on pin GP2")
 
         elif pin == 3:
             buf[11 + 1] = 0
@@ -241,7 +241,7 @@ class MCP2221:
             elif type == TYPE.DAC:
                 buf[11 + 1] |= 3
             else:
-                raise ValueError("Invalid type on pin GP3")
+                raise TypeError("Invalid type on pin GP3")
 
         else:
             raise ValueError("Invalid pin number")
@@ -353,7 +353,7 @@ class MCP2221:
         """ Read data from flash """
 
         if not isinstance(address, FLASH):
-            raise ValueError("Invalid flash address")
+            raise TypeError("Invalid flash address")
 
         buf = [0] * 65
         buf[0 + 1] = 0xB0  # Read Flash Data
@@ -371,7 +371,7 @@ class MCP2221:
 
         if not isinstance(address, FLASH) \
                 or address == FLASH.CHIP_SERIAL_NUMBER:
-            raise ValueError("Invalid flash address")
+            raise TypeError("Invalid flash address")
 
         if len(data) == 0 or len(data) > 60:
             raise ValueError("Invalid data length")

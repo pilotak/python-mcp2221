@@ -82,7 +82,7 @@ def testValidType(pin, type, value):
 def testInvalidType(pin, type):
     mcp2221 = MCP2221.MCP2221()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         mcp2221.InitGP(pin, type)
 
 
