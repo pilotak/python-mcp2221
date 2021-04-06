@@ -4,13 +4,9 @@ on:
   push:
     paths-ignore:
       - "README.md"
-    branches:
-      - master
   pull_request:
     paths-ignore:
       - "README.md"
-    branches:
-      - "*"
 
 jobs:
   validate:
@@ -36,7 +32,7 @@ jobs:
       - name: PEP8
         run: |
           pycodestyle .
-      
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v1
         with:
