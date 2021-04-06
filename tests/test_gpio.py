@@ -105,3 +105,25 @@ def testInvalidWritePin():
 
     with pytest.raises(ValueError):
         mcp2221.WriteGP(4, 1)
+
+
+def testCombinated():
+    mcp2221 = MCP2221.MCP2221()
+    mcp2221.InitGP(0, MCP2221.TYPE.INPUT)
+    mcp2221.InitGP(1, MCP2221.TYPE.OUTPUT)
+    mcp2221.InitGP(2, MCP2221.TYPE.ADC)
+    mcp2221.InitGP(3, MCP2221.TYPE.DAC)
+
+    buf = [0] * 65
+    buf[1] = 0x61  # get SRAM settings
+    buf = mcp2221._send(buf)
+
+    gp0 = buf[22] & 0b111
+    gp0_dir = ((buf[22] >> 3) & 0b1)
+    gp1 = buf[23] & 0b111
+    gp1_dir = ((buf[23] >> 3) & 0b1)
+    gp2 = buf[24] & 0b111
+    gp3 = buf[25] & 0b111
+
+    assert (gp0, gp0_dir, gp1, gp1_dir, gp2, gp3) == (
+        0b000, 1, 0b000, 0, 0b010, 0b011)
