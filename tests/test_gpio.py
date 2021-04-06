@@ -97,7 +97,7 @@ def testInvalidReadPin():
     mcp2221 = MCP2221.MCP2221()
 
     with pytest.raises(ValueError):
-        mcp2221.ReadGP(4)
+        mcp2221.ReadGP(-1)
 
 
 def testInvalidWritePin():

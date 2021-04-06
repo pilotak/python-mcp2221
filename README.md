@@ -1,4 +1,4 @@
-# Python module for MCP2221A
+# Python module for MCP2221
 [![Build](https://github.com/pilotak/python-mcp2221/actions/workflows/build.yaml/badge.svg)](https://github.com/pilotak/python-mcp2221/actions/workflows/build.yaml)
 
 ## Tests

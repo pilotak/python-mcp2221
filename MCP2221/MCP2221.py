@@ -311,7 +311,7 @@ class MCP2221:
 
         self._send(buf)
 
-    def ReadADC(self):
+    def ReadAllADC(self):
         """ Read ADC in bulk """
 
         buf = [0] * 65
@@ -329,17 +329,17 @@ class MCP2221:
     def ReadADC(self, channel: int) -> Union[int, None]:
         """ Read specific ADC channel """
 
-        if not 0 <= channel <= 2:
+        if not 1 <= channel <= 3:
             raise ValueError("Invalid channel number")
 
-        adc = self.ReadADC()
+        adc = self.ReadAllADC()
 
         if adc:
-            return adc[channel]
+            return adc[channel - 1]
         else:
             return None
 
-    def GetDeviceInfo(self) -> Dict[str, str]:
+    def GetDeviceInfo(self) -> Dict[str, Union[str, None]]:
         """ Get device information """
 
         output = dict()
@@ -362,7 +362,13 @@ class MCP2221:
         buf = self._send(buf)
 
         if buf[0] == 0xB0 and buf[1] == 0x00:
-            return buf[3:(3+buf[2])]
+
+            if address == FLASH.GP_SETTING or \
+                    address == FLASH.CHIP_SETTING or \
+                    address == FLASH.CHIP_SERIAL_NUMBER:
+                return buf[4:(4+buf[2])]
+            else:
+                return buf[3:(3+buf[2])]
         else:
             return []
 
