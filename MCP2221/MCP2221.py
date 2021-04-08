@@ -68,41 +68,33 @@ class MCP2221:
         buf = [0] * 65
         buf[1] = 0x61  # get SRAM settings
         rbuf = self._send(buf)
-        print(rbuf)
+        # print(rbuf)
 
         buf[0 + 1] = 0x60  # set SRAM settings
 
         # Clock Output Divider Value
         buf[2 + 1] |= (rbuf[5] & 0b11111)
-        print("Clock divider:", rbuf[5] & 0b111,
-              "duty:", (rbuf[5] >> 3) & 0b11)
 
         # DAC Voltage Reference
         buf[3 + 1] |= rbuf[6] >> 5
-        print("DAC ref:", (rbuf[6] >> 6) & 0b11, "VRM:", (rbuf[6] >> 5) & 0b1)
 
         # ADC Voltage Reference
         buf[5 + 1] |= (rbuf[7] >> 2) & 0b111
-        print("ADC ref:", (rbuf[7] >> 3) & 0b11, "VRM:", (rbuf[7] >> 2) & 0b1)
 
         # Interrupt detection
         # TODO
 
         # GP0 Settings
         buf[8 + 1] = rbuf[22]
-        print("GP0 type:", rbuf[22] & 0b111, "input:", (rbuf[22] >> 3) & 0b1)
 
         # GP1 Settings
         buf[9 + 1] = rbuf[23]
-        print("GP1 type:", rbuf[23] & 0b111, "input:", (rbuf[23] >> 3) & 0b1)
 
         # GP2 Settings
         buf[10 + 1] = rbuf[24]
-        print("GP2 type:", rbuf[24] & 0b111, "input:", (rbuf[24] >> 3) & 0b1)
 
         # GP3 Settings
         buf[11 + 1] = rbuf[25]
-        print("GP3 type:", rbuf[25] & 0b111, "input:", (rbuf[25] >> 3) & 0b1)
 
         return buf
 

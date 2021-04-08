@@ -40,8 +40,3 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
-
-      - name: Test
-        run: |
-          pip install pytest pytest-cov
-          pytest tests/ --doctest-modules --cov=MCP2221 --cov-report term-missing
