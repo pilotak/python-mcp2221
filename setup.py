@@ -19,9 +19,15 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=['hidapi'],
     classifiers=[
+        "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Intended Audience :: Developers",
+        "Topic :: Communications",
+        "Topic :: System :: Hardware :: Hardware Drivers",
+        "Topic :: System :: Hardware :: Universal Serial Bus (USB)",
+        "Topic :: System :: Hardware :: Universal Serial Bus (USB) :: Miscellaneous"
     ],
     python_requires='>=3.7',
 )

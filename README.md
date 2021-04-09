@@ -1,5 +1,6 @@
-# Python module for MCP2221
+# Python driver for MCP2221/A
 [![Build](https://github.com/pilotak/python-mcp2221/actions/workflows/validate.yaml/badge.svg)](https://github.com/pilotak/python-mcp2221/actions/workflows/validate.yaml)
+[![PyPI](https://img.shields.io/pypi/v/mcp2221)](https://pypi.org/project/mcp2221/)
 
 ## Examples
 
