@@ -359,7 +359,7 @@ class MCP2221:
                     address == FLASH.CHIP_SERIAL_NUMBER:
                 return buf[4:(4+buf[2])]
             elif buf[3] == 0x03:
-                return buf[4:(4+buf[2])]
+                return buf[4:(4+buf[2]-2)]
             else:
                 return []
         else:

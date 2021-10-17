@@ -42,7 +42,7 @@ def testReadManufacturer():
     valid = (buf[1] << 8 | buf[0]) == ord('M')
     buf_len = len(buf)
 
-    assert (buf_len, valid) == (52, True)
+    assert (buf_len, valid) == (50, True)
 
 
 def testInvalidReadFlashAddress():
