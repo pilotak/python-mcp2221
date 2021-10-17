@@ -35,14 +35,14 @@ def testWriteReadFlash():
     assert (gp0, gp1, gp2, gp3) == (0b1000, 0b1000, 0b1000, 0b1000)
 
 
-def testReadSerialNumber():
+def testReadManufacturer():
     mcp2221 = MCP2221.MCP2221()
-    buf = mcp2221.ReadFlash(MCP2221.FLASH.USB_SERIAL_NUMBER)
+    buf = mcp2221.ReadFlash(MCP2221.FLASH.USB_MANUFACTURER)
 
-    valid = buf[0] == 3
+    valid = (buf[1] << 8 | buf[0]) == ord('M')
     buf_len = len(buf)
 
-    assert (buf_len, valid) == (22, True)
+    assert (buf_len, valid) == (52, True)
 
 
 def testInvalidReadFlashAddress():

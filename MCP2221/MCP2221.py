@@ -354,13 +354,14 @@ class MCP2221:
         buf = self._send(buf)
 
         if buf[0] == 0xB0 and buf[1] == 0x00:
-
             if address == FLASH.GP_SETTING or \
                     address == FLASH.CHIP_SETTING or \
                     address == FLASH.CHIP_SERIAL_NUMBER:
                 return buf[4:(4+buf[2])]
+            elif buf[3] == 0x03:
+                return buf[4:(4+buf[2])]
             else:
-                return buf[3:(3+buf[2])]
+                return []
         else:
             return []
 
