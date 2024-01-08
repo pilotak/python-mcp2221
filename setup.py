@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="mcp2221",
-    version="1.0.1",
+    version='{{VERSION_PLACEHOLDER}}',
     author="Pavel Slama",
     author_email="info@pavelslama.cz",
     description="Python driver for MCP2221A",
