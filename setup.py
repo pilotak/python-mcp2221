@@ -26,8 +26,7 @@ setuptools.setup(
         "Intended Audience :: Developers",
         "Topic :: Communications",
         "Topic :: System :: Hardware :: Hardware Drivers",
-        "Topic :: System :: Hardware :: Universal Serial Bus (USB)",
-        "Topic :: System :: Hardware :: Universal Serial Bus (USB) :: Miscellaneous"
+        "Topic :: System :: Hardware :: Universal Serial Bus (USB)"
     ],
     python_requires='>=3.7',
 )
