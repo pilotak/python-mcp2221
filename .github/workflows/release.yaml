@@ -21,8 +21,6 @@ jobs:
         id: release
         with:
           release-type: python
-          pull-request-header: ":robot: New release version"
-          pull-request-title-pattern: "chore: release${component} ${version}"
 
   release:
     runs-on: ubuntu-latest
