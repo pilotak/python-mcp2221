@@ -8,15 +8,15 @@ setuptools.setup(
     version='{{VERSION_PLACEHOLDER}}',
     author="Pavel Slama",
     author_email="info@pavelslama.cz",
-    description="Python driver for MCP2221A",
+    description="Python driver for MCP2221/A",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    keywords=['MCP2221', 'MCP2221A', 'GPIO', 'ADC', 'DAC', 'I2C'],
+    keywords=['MCP2221', 'MCP2221A', 'GPIO', 'ADC', 'DAC'],
     url="https://github.com/pilotak/python-mcp2221",
     project_urls={
         "Bug Tracker": "https://github.com/pilotak/python-mcp2221/issues",
     },
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=["tests"]),
     install_requires=['hidapi'],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
