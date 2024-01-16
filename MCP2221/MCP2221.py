@@ -165,80 +165,101 @@ class MCP2221:
         # TODO
         raise Exception("Not yet implemented")
 
-    def InitGP(self, pin: int, type: TYPE, value: int = 0):
+    def InitGP(self, pin: int, type: TYPE, value: bool = False):
         """ Init GPIO """
 
         buf = self._getConfig()
         buf[7 + 1] = 0b10000000  # alter GPIO
 
-        if pin == 0:
-            buf[8 + 1] = 0
+        pin_index = {
+            0: 9,  # 8 + 1
+            1: 10,  # 9 + 1
+            2: 11,  # 10 + 1
+            3: 12,  # 11 + 1
+        }
 
-            if type == TYPE.INPUT:
-                buf[8 + 1] |= 1 << 3
-            elif type == TYPE.OUTPUT:
-                buf[8 + 1] |= (value & 1) << 4
-            elif type == TYPE.SSPND:
-                buf[8 + 1] |= 1
-            elif type == TYPE.LED_RX:
-                buf[8 + 1] |= 2
-            else:
-                raise TypeError("Invalid type on pin GP0")
-
-        elif pin == 1:
-            buf[9 + 1] = 0
-
-            if type == TYPE.INPUT:
-                buf[9 + 1] |= 1 << 3
-            elif type == TYPE.OUTPUT:
-                buf[9 + 1] |= (value & 1) << 4
-            elif type == TYPE.CLOCK_OUT:
-                buf[9 + 1] |= 1
-            elif type == TYPE.ADC:
-                buf[9 + 1] |= 2
-            elif type == TYPE.LED_TX:
-                buf[9 + 1] |= 3
-            elif type == TYPE.INTERRUPT:
-                buf[9 + 1] |= 4
-            else:
-                raise TypeError("Invalid type on pin GP1")
-
-        elif pin == 2:
-            buf[10 + 1] = 0
-
-            if type == TYPE.INPUT:
-                buf[10 + 1] |= 1 << 3
-            elif type == TYPE.OUTPUT:
-                buf[10 + 1] |= (value & 1) << 4
-            elif type == TYPE.USBCFG:
-                buf[10 + 1] |= 1
-            elif type == TYPE.ADC:
-                buf[10 + 1] |= 2
-            elif type == TYPE.DAC:
-                buf[10 + 1] |= 3
-            else:
-                raise TypeError("Invalid type on pin GP2")
-
-        elif pin == 3:
-            buf[11 + 1] = 0
-
-            if type == TYPE.INPUT:
-                buf[11 + 1] |= 1 << 3
-            elif type == TYPE.OUTPUT:
-                buf[11 + 1] |= (value & 1) << 4
-            elif type == TYPE.LED_I2C:
-                buf[11 + 1] |= 1
-            elif type == TYPE.ADC:
-                buf[11 + 1] |= 2
-            elif type == TYPE.DAC:
-                buf[11 + 1] |= 3
-            else:
-                raise TypeError("Invalid type on pin GP3")
-
-        else:
+        if pin not in pin_index:
             raise ValueError("Invalid pin number")
 
+        buf_offset = pin_index[pin]
+        buf[buf_offset] = 0
+
+        if type == TYPE.INPUT:
+            buf[buf_offset] = 1 << 3
+        elif type == TYPE.OUTPUT:
+            buf[buf_offset] = (int(value) & 1) << 4
+        elif type == TYPE.SSPND and pin == 0:
+            buf[buf_offset] = 1
+        elif type == TYPE.LED_RX and pin == 0:
+            buf[buf_offset] = 2
+        elif type == TYPE.CLOCK_OUT and pin == 1:
+            buf[buf_offset] = 1
+        elif type == TYPE.ADC and (pin == 1 or pin == 2 or pin == 3):
+            buf[buf_offset] = 2
+        elif type == TYPE.LED_TX and pin == 1:
+            buf[buf_offset] = 3
+        elif type == TYPE.INTERRUPT and pin == 1:
+            buf[buf_offset] = 4
+        elif type == TYPE.USBCFG and pin == 2:
+            buf[buf_offset] = 1
+        elif type == TYPE.DAC and (pin == 2 or pin == 3):
+            buf[buf_offset] = 3
+        elif type == TYPE.LED_I2C and pin == 3:
+            buf[buf_offset] = 1
+        else:
+            raise TypeError(f"Invalid type on pin GP{pin}")
+
         self._send(buf)
+
+    def GetGPType(self, pin: int) -> TYPE:
+        pin_index = {
+            0: 9,  # 8 + 1
+            1: 10,  # 9 + 1
+            2: 11,  # 10 + 1
+            3: 12,  # 11 + 1
+        }
+
+        if pin not in pin_index:
+            raise ValueError("Invalid pin number")
+
+        buf = self._getConfig()
+
+        buf_offset = pin_index.get(pin)
+        fn = buf[buf_offset] & 0b111
+
+        # shared functions
+        if buf[buf_offset] & (1 << 3):
+            return TYPE.INPUT
+        elif (pin == 1 or pin == 2 or pin == 3) and fn == 2:
+            return TYPE.ADC
+        elif (pin == 2 or pin == 3) and fn == 3:
+            return TYPE.DAC
+
+        # GP0
+        elif pin == 0 and fn == 1:
+            return TYPE.SSPND
+        elif pin == 0 and fn == 2:
+            return TYPE.LED_RX
+
+        # GP1
+        elif pin == 1 and fn == 1:
+            return TYPE.CLOCK_OUT
+        elif pin == 1 and fn == 3:
+            return TYPE.LED_TX
+        elif pin == 1 and fn == 4:
+            return TYPE.INTERRUPT
+
+        # GP2
+        elif pin == 2 and fn == 1:
+            return TYPE.USBCFG
+
+        # GP3
+        elif pin == 3 and fn == 1:
+            return TYPE.LED_I2C
+
+        # check for output
+        elif buf[buf_offset] & 0b1111 == 0:
+            return TYPE.OUTPUT
 
     def ReadAllGP(self):
         """ Read GPIOs in bulk (when set as input or output) """
