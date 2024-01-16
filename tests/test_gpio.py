@@ -87,11 +87,13 @@ def testValidType(pin, type):
 
     assert gp_type == type
 
+
 def testGetType():
     mcp2221 = MCP2221.MCP2221()
 
     with pytest.raises(ValueError):
         mcp2221.GetGPType(5)
+
 
 @pytest.mark.parametrize("pin,type", [
     (0, MCP2221.TYPE.LED_I2C),
