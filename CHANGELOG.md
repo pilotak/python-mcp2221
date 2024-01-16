@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/pilotak/python-mcp2221/compare/v1.0.3...v1.1.0) (2024-01-16)
+
+
+### Features
+
+* get GP type ([a66a18d](https://github.com/pilotak/python-mcp2221/commit/a66a18de07174cb28971ca55c04a0aadb0929e5a))
+
 ## [1.0.3](https://github.com/pilotak/python-mcp2221/compare/v1.0.1...v1.0.3) (2024-01-13)
 
 
