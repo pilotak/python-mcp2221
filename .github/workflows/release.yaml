@@ -47,7 +47,7 @@ jobs:
 
       - name: Update version
         run: |
-          sed -i "s/{{VERSION_PLACEHOLDER}}/${{ steps.prepare.outputs.version  }}/g" setup.py
+          sed -i "s/{{VERSION_PLACEHOLDER}}/${{ steps.prepare.outputs.version }}/g" setup.py
 
       - name: Build wheel
         run: |
