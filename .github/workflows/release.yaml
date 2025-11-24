@@ -15,7 +15,7 @@ jobs:
       patch: ${{ steps.release.outputs.patch }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: googleapis/release-please-action@v4
         id: release
@@ -28,7 +28,7 @@ jobs:
     if: ${{ needs.release_helper.outputs.release }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Prepare
         id: prepare
